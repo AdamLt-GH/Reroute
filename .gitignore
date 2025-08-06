@@ -1,0 +1,35 @@
+# local environment files
+.env
+.env.*
+!.env.example
+
+# frontend dependencies and builds
+node_modules/
+dist/
+.vite/
+
+# python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# test output
+coverage/
+htmlcov/
+.coverage
+playwright-report/
+test-results/
+
+# local database and worker data
+postgres-data/
+redis-data/
+
+# editor and operating system files
+.DS_Store
+.idea/
+.vscode/
+*.swp
