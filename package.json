@@ -1,0 +1,12 @@
+{
+  "name": "reroute",
+  "private": true,
+  "workspaces": [
+    "apps/web"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace @reroute/web",
+    "build:web": "npm run build --workspace @reroute/web",
+    "typecheck:web": "npm run typecheck --workspace @reroute/web"
+  }
+}
