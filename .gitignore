@@ -13,6 +13,7 @@ dist/
 venv/
 __pycache__/
 *.py[cod]
+*.tsbuildinfo
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -23,6 +24,10 @@ htmlcov/
 .coverage
 playwright-report/
 test-results/
+
+# generated TypeScript config output
+vite.config.js
+vite.config.d.ts
 
 # local database and worker data
 postgres-data/
