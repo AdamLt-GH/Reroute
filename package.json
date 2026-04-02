@@ -9,6 +9,7 @@
     "build:web": "npm run build --workspace @reroute/web",
     "typecheck:web": "npm run typecheck --workspace @reroute/web",
     "lint:web": "npm run lint --workspace @reroute/web",
-    "format:web": "npm run format:check --workspace @reroute/web"
+    "format:web": "npm run format:check --workspace @reroute/web",
+    "test:web": "npm run test --workspace @reroute/web"
   }
 }
