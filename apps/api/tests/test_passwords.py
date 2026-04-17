@@ -1,4 +1,6 @@
-from app.auth.passwords import PasswordService
+import pytest
+
+from app.auth.passwords import PasswordPolicyError, PasswordService
 
 
 def test_password_hashes_do_not_contain_the_original_password() -> None:
@@ -16,3 +18,19 @@ def test_incorrect_and_invalid_passwords_are_rejected() -> None:
 
     assert not service.verify(password_hash, "something else")
     assert not service.verify("not an argon hash", "the actual password")
+
+
+@pytest.mark.parametrize(
+    ("password", "message"),
+    [
+        ("short", "at least 10 characters"),
+        (" " * 12, "cannot only contain spaces"),
+        ("a" * 129, "no more than 128 characters"),
+    ],
+)
+def test_password_policy_rejects_unhelpful_passwords(
+    password: str,
+    message: str,
+) -> None:
+    with pytest.raises(PasswordPolicyError, match=message):
+        PasswordService().hash(password)
