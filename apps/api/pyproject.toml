@@ -20,6 +20,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "pytest-asyncio==1.1.0",
     "httpx==0.28.1",
     "mypy==1.17.1",
     "pytest==8.4.1",
