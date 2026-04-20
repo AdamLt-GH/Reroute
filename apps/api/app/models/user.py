@@ -1,4 +1,7 @@
-from sqlalchemy import Boolean, String
+from datetime import time
+from uuid import UUID
+
+from sqlalchemy import Boolean, Float, ForeignKey, Integer, String, Time
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
@@ -16,3 +19,28 @@ class User(UuidPrimaryKeyMixin, TimestampMixin, Base):
         default="Australia/Sydney",
     )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+
+class UserSettings(TimestampMixin, Base):
+    __tablename__ = "user_settings"
+
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    preferred_day_start: Mapped[time] = mapped_column(
+        Time,
+        default=time(8, 0),
+    )
+    preferred_day_end: Mapped[time] = mapped_column(
+        Time,
+        default=time(21, 0),
+    )
+    maximum_daily_work_minutes: Mapped[int] = mapped_column(
+        Integer,
+        default=480,
+    )
+    schedule_change_weight: Mapped[float] = mapped_column(
+        Float,
+        default=1.0,
+    )
