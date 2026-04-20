@@ -2,7 +2,7 @@ from datetime import time
 from uuid import UUID
 
 from sqlalchemy import Boolean, Float, ForeignKey, Integer, String, Time
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
 from app.models.mixins import TimestampMixin, UuidPrimaryKeyMixin
@@ -19,6 +19,11 @@ class User(UuidPrimaryKeyMixin, TimestampMixin, Base):
         default="Australia/Sydney",
     )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    settings: Mapped["UserSettings"] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+        uselist=False,
+    )
 
 
 class UserSettings(TimestampMixin, Base):
@@ -44,3 +49,4 @@ class UserSettings(TimestampMixin, Base):
         Float,
         default=1.0,
     )
+    user: Mapped[User] = relationship(back_populates="settings")

@@ -31,6 +31,8 @@ async def test_registration_builds_a_user_with_a_hashed_password() -> None:
     assert user.email == "adam@example.com"
     assert user.password_hash != "a useful password"
     assert user.timezone == "Australia/Sydney"
+    assert user.settings.maximum_daily_work_minutes == 480
+    assert user.settings.preferred_day_start.hour == 8
 
 
 @pytest.mark.asyncio
