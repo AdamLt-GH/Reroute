@@ -1,0 +1,30 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check out the repository
+        uses: actions/checkout@v4
+
+      - name: set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: install frontend dependencies
+        run: npm ci
+
+      - name: run frontend checks
+        run: |
+          npm run format:web
+          npm run lint:web
+          npm run typecheck:web
+          npm run test:web
+          npm run build:web
