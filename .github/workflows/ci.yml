@@ -28,3 +28,28 @@ jobs:
           npm run typecheck:web
           npm run test:web
           npm run build:web
+
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check out the repository
+        uses: actions/checkout@v4
+
+      - name: set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: install backend dependencies
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/python -m pip install -e "apps/api[dev]"
+
+      - name: run backend checks
+        run: ./scripts/check-api.sh
+
+      - name: check the migration chain
+        working-directory: apps/api
+        run: ../../.venv/bin/alembic -c alembic.ini heads
