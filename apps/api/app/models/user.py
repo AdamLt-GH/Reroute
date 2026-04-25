@@ -1,4 +1,4 @@
-from datetime import time
+from datetime import datetime, time
 from uuid import UUID
 
 from sqlalchemy import Boolean, Float, ForeignKey, Integer, String, Time
@@ -23,6 +23,10 @@ class User(UuidPrimaryKeyMixin, TimestampMixin, Base):
         back_populates="user",
         cascade="all, delete-orphan",
         uselist=False,
+    )
+    sessions: Mapped[list["AuthSession"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
     )
 
 
@@ -50,3 +54,23 @@ class UserSettings(TimestampMixin, Base):
         default=1.0,
     )
     user: Mapped[User] = relationship(back_populates="settings")
+
+
+class AuthSession(UuidPrimaryKeyMixin, TimestampMixin, Base):
+    __tablename__ = "auth_sessions"
+
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True,
+    )
+    token_hash: Mapped[str] = mapped_column(
+        String(64),
+        unique=True,
+        index=True,
+    )
+    expires_at: Mapped[datetime] = mapped_column(
+        nullable=False,
+        index=True,
+    )
+    last_used_at: Mapped[datetime | None] = mapped_column(nullable=True)
+    user: Mapped[User] = relationship(back_populates="sessions")

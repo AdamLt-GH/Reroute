@@ -1,6 +1,6 @@
 from datetime import time
 
-from app.models.user import User, UserSettings
+from app.models.user import AuthSession, User, UserSettings
 
 
 def test_user_model_keeps_the_initial_sydney_timezone() -> None:
@@ -24,3 +24,11 @@ def test_scheduling_settings_start_with_reasonable_defaults() -> None:
     assert table.c.preferred_day_end.default.arg == time(21, 0)
     assert table.c.maximum_daily_work_minutes.default.arg == 480
     assert table.c.schedule_change_weight.default.arg == 1.0
+
+
+def test_auth_session_only_stores_a_token_hash() -> None:
+    columns = AuthSession.__table__.c
+
+    assert "token_hash" in columns
+    assert "token" not in columns
+    assert columns.token_hash.unique
