@@ -53,3 +53,11 @@ def test_localise_rejects_a_time_that_is_already_aware() -> None:
             datetime(2026, 4, 21, 18, 0, tzinfo=UTC),
             "Australia/Sydney",
         )
+
+
+def test_sydney_spring_forward_time_does_not_exist() -> None:
+    with pytest.raises(TimezoneError, match="does not exist"):
+        localise(
+            datetime(2026, 10, 4, 2, 30),
+            "Australia/Sydney",
+        )
