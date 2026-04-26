@@ -4,9 +4,11 @@ import pytest
 
 from app.scheduling.domain.dependencies import (
     Dependency,
+    DependencyCycleError,
     DependencyError,
     build_dependency_graph,
     order_dependency_graph,
+    validate_acyclic,
 )
 
 
@@ -49,3 +51,20 @@ def test_dependency_order_places_prerequisites_first() -> None:
 
     assert result.ordered == (research, analysis, report)
     assert result.blocked == ()
+
+
+def test_dependency_cycles_are_rejected_with_the_blocked_tasks() -> None:
+    first = uuid4()
+    second = uuid4()
+    graph = build_dependency_graph(
+        [first, second],
+        [
+            Dependency(first, second),
+            Dependency(second, first),
+        ],
+    )
+
+    with pytest.raises(DependencyCycleError) as error:
+        validate_acyclic(graph)
+
+    assert set(error.value.task_ids) == {first, second}

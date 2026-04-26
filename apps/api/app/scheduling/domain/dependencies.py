@@ -7,6 +7,12 @@ class DependencyError(ValueError):
     pass
 
 
+class DependencyCycleError(DependencyError):
+    def __init__(self, task_ids: tuple[UUID, ...]) -> None:
+        super().__init__("task dependencies contain a cycle")
+        self.task_ids = task_ids
+
+
 @dataclass(frozen=True)
 class Dependency:
     prerequisite_id: UUID
@@ -65,3 +71,12 @@ def order_dependency_graph(
 
     blocked = tuple(task_id for task_id, count in incoming.items() if count > 0)
     return DependencyOrder(tuple(ordered), blocked)
+
+
+def validate_acyclic(graph: dict[UUID, set[UUID]]) -> tuple[UUID, ...]:
+    result = order_dependency_graph(graph)
+
+    if result.blocked:
+        raise DependencyCycleError(result.blocked)
+
+    return result.ordered
