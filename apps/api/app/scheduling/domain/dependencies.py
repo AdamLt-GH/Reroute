@@ -13,6 +13,12 @@ class Dependency:
     dependent_id: UUID
 
 
+@dataclass(frozen=True)
+class DependencyOrder:
+    ordered: tuple[UUID, ...]
+    blocked: tuple[UUID, ...]
+
+
 def build_dependency_graph(
     task_ids: Iterable[UUID],
     dependencies: Iterable[Dependency],
@@ -30,3 +36,32 @@ def build_dependency_graph(
         graph[dependency.prerequisite_id].add(dependency.dependent_id)
 
     return graph
+
+
+def order_dependency_graph(
+    graph: dict[UUID, set[UUID]],
+) -> DependencyOrder:
+    incoming = {task_id: 0 for task_id in graph}
+
+    for dependents in graph.values():
+        for dependent_id in dependents:
+            incoming[dependent_id] += 1
+
+    ready = sorted(
+        (task_id for task_id, count in incoming.items() if count == 0),
+        key=str,
+    )
+    ordered: list[UUID] = []
+
+    while ready:
+        task_id = ready.pop(0)
+        ordered.append(task_id)
+
+        for dependent_id in sorted(graph[task_id], key=str):
+            incoming[dependent_id] -= 1
+            if incoming[dependent_id] == 0:
+                ready.append(dependent_id)
+                ready.sort(key=str)
+
+    blocked = tuple(task_id for task_id, count in incoming.items() if count > 0)
+    return DependencyOrder(tuple(ordered), blocked)
