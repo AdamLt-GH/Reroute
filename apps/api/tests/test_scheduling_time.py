@@ -61,3 +61,16 @@ def test_sydney_spring_forward_time_does_not_exist() -> None:
             datetime(2026, 10, 4, 2, 30),
             "Australia/Sydney",
         )
+
+
+def test_sydney_fall_back_time_needs_an_explicit_fold() -> None:
+    repeated_time = datetime(2026, 4, 5, 2, 30)
+
+    with pytest.raises(TimezoneError, match="ambiguous"):
+        localise(repeated_time, "Australia/Sydney")
+
+    first = localise(repeated_time, "Australia/Sydney", fold=0)
+    second = localise(repeated_time, "Australia/Sydney", fold=1)
+
+    assert first.utcoffset() != second.utcoffset()
+    assert to_utc(first) != to_utc(second)
