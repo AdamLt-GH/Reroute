@@ -1,6 +1,8 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from uuid import UUID
+
+from app.scheduling.domain.tasks import FlexibleTask
 
 
 class DependencyError(ValueError):
@@ -80,3 +82,12 @@ def validate_acyclic(graph: dict[UUID, set[UUID]]) -> tuple[UUID, ...]:
         raise DependencyCycleError(result.blocked)
 
     return result.ordered
+
+
+def validate_task_dependencies(
+    tasks: Mapping[UUID, FlexibleTask],
+    dependencies: Iterable[Dependency],
+) -> tuple[FlexibleTask, ...]:
+    graph = build_dependency_graph(tasks, dependencies)
+    ordered_ids = validate_acyclic(graph)
+    return tuple(tasks[task_id] for task_id in ordered_ids)

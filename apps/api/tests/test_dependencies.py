@@ -1,4 +1,5 @@
-from uuid import uuid4
+from datetime import UTC, datetime, timedelta
+from uuid import UUID, uuid4
 
 import pytest
 
@@ -9,7 +10,9 @@ from app.scheduling.domain.dependencies import (
     build_dependency_graph,
     order_dependency_graph,
     validate_acyclic,
+    validate_task_dependencies,
 )
+from app.scheduling.domain.tasks import FlexibleTask
 
 
 def test_dependency_graph_keeps_each_task() -> None:
@@ -68,3 +71,32 @@ def test_dependency_cycles_are_rejected_with_the_blocked_tasks() -> None:
         validate_acyclic(graph)
 
     assert set(error.value.task_ids) == {first, second}
+
+
+def task(task_id: UUID) -> FlexibleTask:
+    start = datetime(2026, 4, 27, 18, 0, tzinfo=UTC)
+    return FlexibleTask(
+        id=task_id,
+        title="Task",
+        estimated_minutes=60,
+        remaining_minutes=60,
+        earliest_start=start,
+        deadline=start + timedelta(days=2),
+        minimum_session_minutes=30,
+        maximum_session_minutes=60,
+        preferred_session_minutes=60,
+        splittable=False,
+    )
+
+
+def test_task_dependency_validation_returns_tasks_in_working_order() -> None:
+    first = uuid4()
+    second = uuid4()
+    tasks = {first: task(first), second: task(second)}
+
+    ordered = validate_task_dependencies(
+        tasks,
+        [Dependency(first, second)],
+    )
+
+    assert [item.id for item in ordered] == [first, second]
