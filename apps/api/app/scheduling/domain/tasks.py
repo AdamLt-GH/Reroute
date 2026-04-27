@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from enum import StrEnum
 from uuid import UUID
@@ -44,6 +44,7 @@ class FlexibleTask:
     priority: TaskPriority = TaskPriority.MEDIUM
     difficulty: TaskDifficulty = TaskDifficulty.MEDIUM
     status: TaskStatus = TaskStatus.BACKLOG
+    actual_minutes: int = 0
 
 
 def validate_task(task: FlexibleTask) -> FlexibleTask:
@@ -69,3 +70,23 @@ def validate_task(task: FlexibleTask) -> FlexibleTask:
         raise TaskValidationError("non-splittable task does not fit one session")
 
     return task
+
+
+def record_task_progress(
+    task: FlexibleTask,
+    completed_minutes: int,
+) -> FlexibleTask:
+    if completed_minutes <= 0:
+        raise TaskValidationError("completed duration must be positive")
+    if completed_minutes > task.remaining_minutes:
+        raise TaskValidationError("completed duration exceeds the remaining work")
+
+    remaining = task.remaining_minutes - completed_minutes
+    status = TaskStatus.COMPLETED if remaining == 0 else TaskStatus.IN_PROGRESS
+
+    return replace(
+        task,
+        remaining_minutes=remaining,
+        actual_minutes=task.actual_minutes + completed_minutes,
+        status=status,
+    )
