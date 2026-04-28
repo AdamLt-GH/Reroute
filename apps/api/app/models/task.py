@@ -41,3 +41,16 @@ class Task(UuidPrimaryKeyMixin, TimestampMixin, Base):
     status: Mapped[str] = mapped_column(String(20), default="backlog")
 
     user: Mapped[User] = relationship(back_populates="tasks")
+
+
+class TaskDependency(TimestampMixin, Base):
+    __tablename__ = "task_dependencies"
+
+    prerequisite_id: Mapped[UUID] = mapped_column(
+        ForeignKey("tasks.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    dependent_id: Mapped[UUID] = mapped_column(
+        ForeignKey("tasks.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
