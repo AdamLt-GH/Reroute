@@ -11,6 +11,7 @@ from app.database.base import Base
 from app.models.mixins import TimestampMixin, UuidPrimaryKeyMixin
 
 if TYPE_CHECKING:
+    from app.models.event import FixedEvent
     from app.models.task import Task
 
 
@@ -35,6 +36,10 @@ class User(UuidPrimaryKeyMixin, TimestampMixin, Base):
         cascade="all, delete-orphan",
     )
     tasks: Mapped[list[Task]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    fixed_events: Mapped[list[FixedEvent]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan",
     )
