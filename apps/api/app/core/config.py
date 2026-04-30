@@ -18,6 +18,7 @@ class Settings(BaseSettings):
         default="postgresql+asyncpg://reroute:reroute@localhost:5432/reroute"
     )
     redis_url: str = "redis://localhost:6379/0"
+    session_days: int = Field(default=30, ge=1, le=365)
 
 
 @lru_cache

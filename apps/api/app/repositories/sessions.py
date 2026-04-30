@@ -6,7 +6,7 @@ from uuid import UUID
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.user import AuthSession
+from app.models.user import AuthSession, User
 
 
 def generate_session_token() -> str:
@@ -43,6 +43,18 @@ class SessionRepository:
         statement = select(AuthSession).where(
             AuthSession.token_hash == hash_session_token(token),
             AuthSession.expires_at > datetime.now(UTC),
+        )
+        return await self._session.scalar(statement)
+
+    async def find_user(self, token: str) -> User | None:
+        statement = (
+            select(User)
+            .join(AuthSession, AuthSession.user_id == User.id)
+            .where(
+                AuthSession.token_hash == hash_session_token(token),
+                AuthSession.expires_at > datetime.now(UTC),
+                User.is_active.is_(True),
+            )
         )
         return await self._session.scalar(statement)
 
