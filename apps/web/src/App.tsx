@@ -1,31 +1,57 @@
 import { Link, Outlet } from "react-router-dom";
 
+import { useCurrentUser } from "./features/auth/api";
+
 export function App() {
+  const currentUser = useCurrentUser();
+
   return (
-    <>
-      <header className="site-header">
+    <div className="app-shell">
+      <aside className="sidebar">
         <Link className="brand" to="/">
           Reroute
         </Link>
         <nav aria-label="Main navigation">
+          <Link to="/">Today</Link>
           <Link to="/tasks">Tasks</Link>
           <Link to="/calendar">Calendar</Link>
+          <Link to="/availability">Availability</Link>
+          <Link to="/settings">Settings</Link>
         </nav>
-      </header>
-      <Outlet />
-    </>
+        <div className="account-summary">
+          <strong>{currentUser.data?.display_name}</strong>
+          <span>{currentUser.data?.email}</span>
+        </div>
+      </aside>
+      <div className="app-content">
+        <header className="page-header">
+          <p>Your schedule, with room for real life.</p>
+        </header>
+        <Outlet />
+      </div>
+    </div>
   );
 }
 
 export function HomePage() {
   return (
-    <main className="welcome">
-      <p className="eyebrow">Reroute</p>
-      <h1>Build a week that can handle real life.</h1>
-      <p>
-        Add your commitments, tasks and availability, then let Reroute work out
-        a realistic plan.
-      </p>
+    <main className="page">
+      <p className="eyebrow">Today</p>
+      <h1>Your week at a glance</h1>
+      <div className="dashboard-grid">
+        <section className="panel">
+          <h2>Next up</h2>
+          <p>No commitments have been added yet.</p>
+        </section>
+        <section className="panel">
+          <h2>Tasks at risk</h2>
+          <p>Tasks close to their deadline will show here.</p>
+        </section>
+        <section className="panel panel-wide">
+          <h2>Workload</h2>
+          <p>Add your availability before generating the first schedule.</p>
+        </section>
+      </div>
     </main>
   );
 }
@@ -44,6 +70,24 @@ export function CalendarPage() {
     <main className="page">
       <h1>Calendar</h1>
       <p>Your fixed events and generated schedule will appear here.</p>
+    </main>
+  );
+}
+
+export function AvailabilityPage() {
+  return (
+    <main className="page">
+      <h1>Availability</h1>
+      <p>Choose when flexible work is allowed to be scheduled.</p>
+    </main>
+  );
+}
+
+export function SettingsPage() {
+  return (
+    <main className="page">
+      <h1>Settings</h1>
+      <p>Scheduling rules and preferences will be managed here.</p>
     </main>
   );
 }

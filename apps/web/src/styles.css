@@ -23,12 +23,19 @@ body {
   min-height: 100vh;
 }
 
-.site-header {
+.app-shell {
+  display: grid;
+  min-height: 100vh;
+  grid-template-columns: 240px minmax(0, 1fr);
+}
+
+.sidebar {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 32px;
-  border-bottom: 1px solid #d7d9d1;
+  flex-direction: column;
+  gap: 40px;
+  padding: 28px 24px;
+  border-right: 1px solid #d7d9d1;
+  background: #fffdf7;
 }
 
 .brand {
@@ -40,17 +47,49 @@ body {
 
 nav {
   display: flex;
-  gap: 20px;
+  flex-direction: column;
+  gap: 8px;
 }
 
 nav a {
+  padding: 10px 12px;
+  border-radius: 8px;
   color: #506057;
+  text-decoration: none;
 }
 
-.welcome {
-  width: min(680px, calc(100% - 48px));
-  margin: 0 auto;
-  padding: 18vh 0 64px;
+nav a:hover {
+  background: #e8eee8;
+  color: #17211b;
+}
+
+.account-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: auto;
+  overflow: hidden;
+}
+
+.account-summary span {
+  overflow: hidden;
+  color: #6e7a73;
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+}
+
+.app-content {
+  min-width: 0;
+}
+
+.page-header {
+  padding: 20px 32px;
+  border-bottom: 1px solid #d7d9d1;
+  color: #6e7a73;
+}
+
+.page-header p {
+  margin: 0;
 }
 
 .page {
@@ -61,6 +100,28 @@ nav a {
 
 .page h1 {
   font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+.dashboard-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.panel {
+  min-height: 160px;
+  padding: 24px;
+  border: 1px solid #d7d9d1;
+  border-radius: 16px;
+  background: #fffdf7;
+}
+
+.panel h2 {
+  margin-top: 0;
+}
+
+.panel-wide {
+  grid-column: 1 / -1;
 }
 
 .auth-page {
@@ -98,9 +159,26 @@ h1 {
   line-height: 0.98;
 }
 
-.welcome > p:last-child {
-  max-width: 560px;
-  color: #506057;
-  font-size: 1.1rem;
-  line-height: 1.7;
+@media (max-width: 760px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    gap: 20px;
+    border-right: 0;
+    border-bottom: 1px solid #d7d9d1;
+  }
+
+  .sidebar nav {
+    flex-flow: row wrap;
+  }
+
+  .account-summary {
+    display: none;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
 }
