@@ -6,6 +6,7 @@ from app.models.user import AuthSession, User, UserSettings
 
 __all__ = [
     "AuthSession",
+    "AvailabilityWindow",
     "FixedEvent",
     "SchedulingConstraint",
     "SchedulingPreference",
@@ -14,4 +15,5 @@ __all__ = [
     "User",
     "UserSettings",
 ]
+from app.models.availability import AvailabilityWindow
 from app.models.event import FixedEvent
