@@ -63,3 +63,12 @@ class TaskResponse(BaseModel):
     difficulty: TaskDifficulty
     category: str | None
     status: TaskStatus
+
+
+class TaskDependencyCreate(BaseModel):
+    prerequisite_id: UUID
+    dependent_id: UUID
+
+
+class TaskDependencyResponse(TaskDependencyCreate):
+    model_config = ConfigDict(from_attributes=True)
