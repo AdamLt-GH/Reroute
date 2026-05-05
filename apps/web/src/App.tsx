@@ -1,6 +1,7 @@
 import { Link, Outlet } from "react-router-dom";
 
 import { useCurrentUser } from "./features/auth/api";
+import { EventForm } from "./features/events/EventForm";
 
 export function App() {
   const currentUser = useCurrentUser();
@@ -70,6 +71,7 @@ export function CalendarPage() {
     <main className="page">
       <h1>Calendar</h1>
       <p>Your fixed events and generated schedule will appear here.</p>
+      <EventForm />
     </main>
   );
 }
