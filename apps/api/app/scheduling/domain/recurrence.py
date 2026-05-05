@@ -16,22 +16,32 @@ def expand_recurrence(
     *,
     horizon_start: datetime,
     horizon_end: datetime,
+    maximum_occurrences: int = 500,
 ) -> list[FixedEventWindow]:
     require_aware(horizon_start)
     require_aware(horizon_end)
 
     if horizon_start >= horizon_end:
         raise RecurrenceError("recurrence horizon is reversed")
+    if maximum_occurrences < 1:
+        raise RecurrenceError("maximum occurrences must be positive")
 
     try:
         recurrence = rrulestr(rule, dtstart=event.start)
-        starts = recurrence.between(
+        starts = []
+        for start in recurrence.xafter(
             horizon_start,
-            horizon_end,
+            count=maximum_occurrences + 1,
             inc=True,
-        )
+        ):
+            if start > horizon_end:
+                break
+            starts.append(start)
     except (TypeError, ValueError) as error:
         raise RecurrenceError("recurrence rule is invalid") from error
+
+    if len(starts) > maximum_occurrences:
+        raise RecurrenceError("recurrence creates too many events")
 
     duration = event.end - event.start
     return [
