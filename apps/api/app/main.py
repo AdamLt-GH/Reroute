@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.routes.authentication import router as authentication_router
 from app.api.routes.availability import router as availability_router
 from app.api.routes.events import router as events_router
+from app.api.routes.preferences import router as preferences_router
 from app.api.routes.users import router as users_router
 from app.core.config import get_settings
 from app.core.logging import configure_logging
@@ -36,6 +37,7 @@ def create_app() -> FastAPI:
     app.include_router(authentication_router)
     app.include_router(availability_router)
     app.include_router(events_router)
+    app.include_router(preferences_router)
     app.include_router(users_router)
 
     @app.get("/health", tags=["system"])

@@ -1,4 +1,6 @@
-from pydantic import BaseModel, Field
+from uuid import UUID
+
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.scheduling.domain.preferences import ConstraintKind, PreferenceKind
 
@@ -18,3 +20,15 @@ class PreferenceCreate(BaseModel):
     weight: float = Field(default=1.0, ge=0, le=100)
     settings: dict[str, JsonValue] = Field(default_factory=dict)
     enabled: bool = True
+
+
+class ConstraintResponse(ConstraintCreate):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+
+
+class PreferenceResponse(PreferenceCreate):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
