@@ -2,6 +2,7 @@ import { Link, Outlet } from "react-router-dom";
 
 import { useCurrentUser } from "./features/auth/api";
 import { EventForm } from "./features/events/EventForm";
+import { TaskList } from "./features/tasks/TaskList";
 
 export function App() {
   const currentUser = useCurrentUser();
@@ -61,7 +62,8 @@ export function TasksPage() {
   return (
     <main className="page">
       <h1>Tasks</h1>
-      <p>Flexible tasks will be managed here.</p>
+      <p>Keep track of flexible work before it is placed into your week.</p>
+      <TaskList />
     </main>
   );
 }
