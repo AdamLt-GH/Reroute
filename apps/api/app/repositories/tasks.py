@@ -34,6 +34,12 @@ class TaskRepository:
         )
         return set(result)
 
+    async def add(self, task: Task) -> Task:
+        self._session.add(task)
+        await self._session.flush()
+        await self._session.refresh(task)
+        return task
+
 
 class TaskDependencyRepository:
     def __init__(self, session: AsyncSession) -> None:

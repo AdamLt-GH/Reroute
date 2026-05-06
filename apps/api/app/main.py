@@ -12,6 +12,7 @@ from app.api.routes.availability import router as availability_router
 from app.api.routes.events import router as events_router
 from app.api.routes.preferences import router as preferences_router
 from app.api.routes.task_dependencies import router as task_dependencies_router
+from app.api.routes.tasks import router as tasks_router
 from app.api.routes.users import router as users_router
 from app.core.config import get_settings
 from app.core.logging import configure_logging
@@ -40,6 +41,7 @@ def create_app() -> FastAPI:
     app.include_router(events_router)
     app.include_router(preferences_router)
     app.include_router(task_dependencies_router)
+    app.include_router(tasks_router)
     app.include_router(users_router)
 
     @app.get("/health", tags=["system"])
