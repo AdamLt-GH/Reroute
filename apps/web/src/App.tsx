@@ -3,6 +3,7 @@ import { Link, Outlet } from "react-router-dom";
 import { useCurrentUser } from "./features/auth/api";
 import { AvailabilityEditor } from "./features/availability/AvailabilityEditor";
 import { EventForm } from "./features/events/EventForm";
+import { SettingsEditor } from "./features/preferences/SettingsEditor";
 import { TaskList } from "./features/tasks/TaskList";
 
 export function App() {
@@ -93,7 +94,8 @@ export function SettingsPage() {
   return (
     <main className="page">
       <h1>Settings</h1>
-      <p>Scheduling rules and preferences will be managed here.</p>
+      <p>Set the hard rules and softer goals used to build your schedule.</p>
+      <SettingsEditor />
     </main>
   );
 }

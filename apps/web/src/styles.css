@@ -321,6 +321,25 @@ nav a:hover {
   cursor: pointer;
 }
 
+.settings-forms,
+.settings-lists {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.settings-forms .form-card,
+.settings-lists .editor-list {
+  max-width: none;
+  margin-top: 24px;
+}
+
+.field-help {
+  margin: -6px 0 0;
+  color: #6e7a73;
+  font-size: 0.9rem;
+}
+
 [role="alert"] {
   margin: 0;
   color: #a22b2b;
@@ -399,6 +418,11 @@ h1 {
   }
 
   .editor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-forms,
+  .settings-lists {
     grid-template-columns: 1fr;
   }
 }
