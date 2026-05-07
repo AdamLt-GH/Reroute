@@ -3,6 +3,7 @@ import { Link, Outlet } from "react-router-dom";
 import { useCurrentUser } from "./features/auth/api";
 import { AvailabilityEditor } from "./features/availability/AvailabilityEditor";
 import { EventForm } from "./features/events/EventForm";
+import { WeekCalendar } from "./features/events/WeekCalendar";
 import { SettingsEditor } from "./features/preferences/SettingsEditor";
 import { TaskList } from "./features/tasks/TaskList";
 
@@ -75,6 +76,7 @@ export function CalendarPage() {
     <main className="page">
       <h1>Calendar</h1>
       <p>Your fixed events and generated schedule will appear here.</p>
+      <WeekCalendar />
       <EventForm />
     </main>
   );
