@@ -142,6 +142,7 @@ nav a:hover {
 }
 
 .form-card input,
+.form-card select,
 .form-card button {
   min-height: 42px;
   padding: 10px 12px;
@@ -270,6 +271,56 @@ nav a:hover {
   text-align: center;
 }
 
+.editor-grid {
+  display: grid;
+  align-items: start;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.8fr);
+}
+
+.editor-grid .form-card {
+  margin-top: 24px;
+}
+
+.editor-list {
+  margin-top: 24px;
+  padding: 24px;
+  border: 1px solid #d7d9d1;
+  border-radius: 16px;
+  background: #fffdf7;
+}
+
+.editor-list h2 {
+  margin-top: 0;
+}
+
+.editor-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid #e4e5df;
+}
+
+.editor-list-item div {
+  display: grid;
+  gap: 4px;
+}
+
+.editor-list-item span {
+  color: #6e7a73;
+  font-size: 0.9rem;
+}
+
+.editor-list-item button {
+  padding: 8px 10px;
+  border: 1px solid #bdc5be;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
 [role="alert"] {
   margin: 0;
   color: #a22b2b;
@@ -345,5 +396,9 @@ h1 {
 
   .task-card dl {
     min-width: 0;
+  }
+
+  .editor-grid {
+    grid-template-columns: 1fr;
   }
 }

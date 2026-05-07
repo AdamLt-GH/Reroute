@@ -1,6 +1,7 @@
 import { Link, Outlet } from "react-router-dom";
 
 import { useCurrentUser } from "./features/auth/api";
+import { AvailabilityEditor } from "./features/availability/AvailabilityEditor";
 import { EventForm } from "./features/events/EventForm";
 import { TaskList } from "./features/tasks/TaskList";
 
@@ -83,6 +84,7 @@ export function AvailabilityPage() {
     <main className="page">
       <h1>Availability</h1>
       <p>Choose when flexible work is allowed to be scheduled.</p>
+      <AvailabilityEditor />
     </main>
   );
 }
