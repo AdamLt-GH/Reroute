@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiRequest } from "../../api/client";
 
@@ -12,6 +12,21 @@ export interface EventInput {
   locked: boolean;
 }
 
+export interface FixedEvent extends Omit<EventInput, "location"> {
+  id: string;
+  location: string | null;
+  recurrence_rule: string | null;
+}
+
+export const eventsKey = ["events"] as const;
+
+export function useEvents() {
+  return useQuery({
+    queryKey: eventsKey,
+    queryFn: () => apiRequest<FixedEvent[]>("/api/events"),
+  });
+}
+
 export function useCreateEvent() {
   const client = useQueryClient();
 
@@ -22,7 +37,7 @@ export function useCreateEvent() {
         body: JSON.stringify(event),
       }),
     onSuccess: async () => {
-      await client.invalidateQueries({ queryKey: ["events"] });
+      await client.invalidateQueries({ queryKey: eventsKey });
     },
   });
 }
