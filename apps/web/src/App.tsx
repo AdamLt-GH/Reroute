@@ -6,6 +6,7 @@ import { EventForm } from "./features/events/EventForm";
 import { WeekCalendar } from "./features/events/WeekCalendar";
 import { SettingsEditor } from "./features/preferences/SettingsEditor";
 import { TaskDependencyEditor } from "./features/tasks/TaskDependencyEditor";
+import { TaskForm } from "./features/tasks/TaskForm";
 import { TaskList } from "./features/tasks/TaskList";
 
 export function App() {
@@ -67,6 +68,7 @@ export function TasksPage() {
     <main className="page">
       <h1>Tasks</h1>
       <p>Keep track of flexible work before it is placed into your week.</p>
+      <TaskForm />
       <TaskList />
       <TaskDependencyEditor />
     </main>

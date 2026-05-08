@@ -143,6 +143,7 @@ nav a:hover {
 
 .form-card input,
 .form-card select,
+.form-card textarea,
 .form-card button {
   min-height: 42px;
   padding: 10px 12px;
