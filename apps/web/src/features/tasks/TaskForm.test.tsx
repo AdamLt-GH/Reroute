@@ -1,9 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { expect, it } from "vitest";
+import { afterEach, expect, it } from "vitest";
 
 import { TaskForm } from "./TaskForm";
+
+afterEach(cleanup);
 
 it("explains when a task deadline is too early", async () => {
   const client = new QueryClient({
@@ -24,5 +26,30 @@ it("explains when a task deadline is too early", async () => {
 
   expect(
     await screen.findByText("Deadline must be after the earliest start"),
+  ).toBeInTheDocument();
+});
+
+it("stops a non-splittable task that is longer than one session", async () => {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  const user = userEvent.setup();
+
+  render(
+    <QueryClientProvider client={client}>
+      <TaskForm />
+    </QueryClientProvider>,
+  );
+
+  await user.type(screen.getByLabelText("Title"), "Write final report");
+  await user.clear(screen.getByLabelText("Estimated minutes"));
+  await user.type(screen.getByLabelText("Estimated minutes"), "180");
+  await user.type(screen.getByLabelText("Earliest start"), "2026-05-09T09:00");
+  await user.type(screen.getByLabelText("Deadline"), "2026-05-10T17:00");
+  await user.click(screen.getByLabelText("Can split across sessions"));
+  await user.click(screen.getByRole("button", { name: "Add task" }));
+
+  expect(
+    await screen.findByText("This task is too long to fit into one session"),
   ).toBeInTheDocument();
 });
