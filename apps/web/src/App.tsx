@@ -2,6 +2,7 @@ import { Link, Outlet } from "react-router-dom";
 
 import { useCurrentUser } from "./features/auth/api";
 import { AvailabilityEditor } from "./features/availability/AvailabilityEditor";
+import { Dashboard } from "./features/dashboard/Dashboard";
 import { EventForm } from "./features/events/EventForm";
 import { WeekCalendar } from "./features/events/WeekCalendar";
 import { SettingsEditor } from "./features/preferences/SettingsEditor";
@@ -45,20 +46,7 @@ export function HomePage() {
     <main className="page">
       <p className="eyebrow">Today</p>
       <h1>Your week at a glance</h1>
-      <div className="dashboard-grid">
-        <section className="panel">
-          <h2>Next up</h2>
-          <p>No commitments have been added yet.</p>
-        </section>
-        <section className="panel">
-          <h2>Tasks at risk</h2>
-          <p>Tasks close to their deadline will show here.</p>
-        </section>
-        <section className="panel panel-wide">
-          <h2>Workload</h2>
-          <p>Add your availability before generating the first schedule.</p>
-        </section>
-      </div>
+      <Dashboard />
     </main>
   );
 }

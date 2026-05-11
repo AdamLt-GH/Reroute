@@ -124,6 +124,41 @@ nav a:hover {
   grid-column: 1 / -1;
 }
 
+.dashboard-list {
+  display: grid;
+  gap: 10px;
+}
+
+.dashboard-list article {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 10px;
+  border-top: 1px solid #e4e5df;
+}
+
+.dashboard-list span {
+  color: #6e7a73;
+  font-size: 0.85rem;
+  text-align: right;
+}
+
+.workload-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.workload-panel p {
+  margin-bottom: 0;
+}
+
+.workload-panel > strong {
+  color: #26704d;
+  font-size: 2.4rem;
+}
+
 .form-card {
   display: grid;
   max-width: 680px;
@@ -568,6 +603,11 @@ h1 {
 
   .dashboard-grid {
     grid-template-columns: 1fr;
+  }
+
+  .workload-panel {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .form-row {
