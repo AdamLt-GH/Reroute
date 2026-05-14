@@ -58,3 +58,25 @@ async def delete_event(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="fixed event not found",
         ) from error
+
+
+@router.put("/{event_id}", response_model=FixedEventResponse)
+async def update_event(
+    event_id: UUID,
+    request: FixedEventCreate,
+    user: Annotated[User, Depends(get_current_user)],
+    service: Annotated[EventService, Depends(get_event_service)],
+) -> FixedEventResponse:
+    try:
+        event = await service.update(user.id, event_id, request)
+    except EventNotFoundError as error:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="fixed event not found",
+        ) from error
+    except EventConflictError as error:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="fixed event conflicts with an existing commitment",
+        ) from error
+    return FixedEventResponse.model_validate(event)

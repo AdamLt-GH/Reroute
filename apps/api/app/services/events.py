@@ -54,6 +54,28 @@ class EventService:
 
         return await self._repository.add(candidate)
 
+    async def update(
+        self,
+        user_id: UUID,
+        event_id: UUID,
+        request: FixedEventCreate,
+    ) -> FixedEvent:
+        event = await self._repository.find_for_user(user_id, event_id)
+        if event is None:
+            raise EventNotFoundError
+
+        for field, value in request.model_dump().items():
+            setattr(event, field, value)
+
+        for existing in await self._repository.list_for_user(user_id):
+            if existing.id != event_id and events_overlap(
+                to_event_window(event),
+                to_event_window(existing),
+            ):
+                raise EventConflictError
+
+        return await self._repository.save(event)
+
     async def delete(self, user_id: UUID, event_id: UUID) -> None:
         if not await self._repository.delete_for_user(user_id, event_id):
             raise EventNotFoundError

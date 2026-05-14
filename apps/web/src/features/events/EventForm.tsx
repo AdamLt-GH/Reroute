@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { useCreateEvent } from "./api";
+import { type FixedEvent, useCreateEvent, useUpdateEvent } from "./api";
 
 const eventSchema = z
   .object({
@@ -21,8 +21,20 @@ const eventSchema = z
 type EventFormInput = z.input<typeof eventSchema>;
 type EventFormValues = z.output<typeof eventSchema>;
 
-export function EventForm() {
+function toLocalInput(value: string): string {
+  const date = new Date(value);
+  const offset = date.getTimezoneOffset() * 60_000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+}
+
+interface EventFormProps {
+  event?: FixedEvent;
+  onDone?: () => void;
+}
+
+export function EventForm({ event, onDone }: EventFormProps) {
   const createEvent = useCreateEvent();
+  const updateEvent = useUpdateEvent(event?.id ?? "");
   const {
     register,
     handleSubmit,
@@ -31,17 +43,17 @@ export function EventForm() {
   } = useForm<EventFormInput, unknown, EventFormValues>({
     resolver: zodResolver(eventSchema),
     defaultValues: {
-      title: "",
-      start: "",
-      end: "",
-      location: "",
-      travelBefore: 0,
-      travelAfter: 0,
+      title: event?.title ?? "",
+      start: event ? toLocalInput(event.start_at) : "",
+      end: event ? toLocalInput(event.end_at) : "",
+      location: event?.location ?? "",
+      travelBefore: event?.travel_before_minutes ?? 0,
+      travelAfter: event?.travel_after_minutes ?? 0,
     },
   });
 
   const submit = handleSubmit(async (values) => {
-    await createEvent.mutateAsync({
+    const request = {
       title: values.title,
       start_at: new Date(values.start).toISOString(),
       end_at: new Date(values.end).toISOString(),
@@ -49,13 +61,19 @@ export function EventForm() {
       travel_before_minutes: values.travelBefore,
       travel_after_minutes: values.travelAfter,
       locked: true,
-    });
+    };
+    if (event) {
+      await updateEvent.mutateAsync(request);
+    } else {
+      await createEvent.mutateAsync(request);
+    }
     reset();
+    onDone?.();
   });
 
   return (
     <form className="form-card" onSubmit={(event) => void submit(event)}>
-      <h2>Add fixed event</h2>
+      <h2>{event ? "Edit fixed event" : "Add fixed event"}</h2>
       <label>
         Title
         <input {...register("title")} />
@@ -90,10 +108,20 @@ export function EventForm() {
         </label>
       </div>
 
-      {createEvent.error && <p role="alert">{createEvent.error.message}</p>}
-      <button disabled={createEvent.isPending} type="submit">
-        {createEvent.isPending ? "Adding event..." : "Add event"}
+      {(createEvent.error ?? updateEvent.error) && (
+        <p role="alert">{(createEvent.error ?? updateEvent.error)?.message}</p>
+      )}
+      <button
+        disabled={createEvent.isPending || updateEvent.isPending}
+        type="submit"
+      >
+        {event ? "Save event" : "Add event"}
       </button>
+      {event && (
+        <button className="secondary-button" onClick={onDone} type="button">
+          Cancel
+        </button>
+      )}
     </form>
   );
 }

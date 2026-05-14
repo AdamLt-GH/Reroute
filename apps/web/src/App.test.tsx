@@ -1,10 +1,19 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { MemoryRouter } from "react-router-dom";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { App, HomePage } from "./App";
+
+beforeEach(() => {
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json([])));
+});
+
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
 
 function renderApp(component: ReactNode) {
   const client = new QueryClient({

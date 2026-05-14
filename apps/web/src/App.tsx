@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 
 import { useCurrentUser } from "./features/auth/api";
@@ -5,6 +6,7 @@ import { AvailabilityEditor } from "./features/availability/AvailabilityEditor";
 import { Dashboard } from "./features/dashboard/Dashboard";
 import { EventForm } from "./features/events/EventForm";
 import { WeekCalendar } from "./features/events/WeekCalendar";
+import type { FixedEvent } from "./features/events/api";
 import { SettingsEditor } from "./features/preferences/SettingsEditor";
 import { TaskDependencyEditor } from "./features/tasks/TaskDependencyEditor";
 import { TaskForm } from "./features/tasks/TaskForm";
@@ -64,12 +66,18 @@ export function TasksPage() {
 }
 
 export function CalendarPage() {
+  const [editingEvent, setEditingEvent] = useState<FixedEvent>();
+
   return (
     <main className="page">
       <h1>Calendar</h1>
       <p>Your fixed events and generated schedule will appear here.</p>
-      <WeekCalendar />
-      <EventForm />
+      <WeekCalendar onEdit={setEditingEvent} />
+      <EventForm
+        event={editingEvent}
+        key={editingEvent?.id ?? "new"}
+        onDone={() => setEditingEvent(undefined)}
+      />
     </main>
   );
 }

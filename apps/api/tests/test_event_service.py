@@ -53,3 +53,30 @@ async def test_event_service_rejects_a_conflicting_event() -> None:
             uuid4(),
             event_request(9, 11),
         )
+
+
+@pytest.mark.asyncio
+async def test_event_service_updates_an_owned_event() -> None:
+    user_id = uuid4()
+    event = FixedEvent(
+        id=uuid4(),
+        user_id=user_id,
+        title="Old title",
+        start_at=datetime(2026, 5, 5, 9, tzinfo=UTC),
+        end_at=datetime(2026, 5, 5, 10, tzinfo=UTC),
+        travel_before_minutes=0,
+        travel_after_minutes=0,
+    )
+    repository = AsyncMock(spec=EventRepository)
+    repository.find_for_user.return_value = event
+    repository.list_for_user.return_value = [event]
+    repository.save.side_effect = lambda saved: saved
+
+    updated = await EventService(repository).update(
+        user_id,
+        event.id,
+        event_request(11, 12),
+    )
+
+    assert updated.title == "Commitment"
+    assert updated.start_at.hour == 11

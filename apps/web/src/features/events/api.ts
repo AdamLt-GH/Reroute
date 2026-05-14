@@ -41,3 +41,30 @@ export function useCreateEvent() {
     },
   });
 }
+
+export function useUpdateEvent(eventId: string) {
+  const client = useQueryClient();
+
+  return useMutation({
+    mutationFn: (event: EventInput) =>
+      apiRequest<FixedEvent>(`/api/events/${eventId}`, {
+        method: "PUT",
+        body: JSON.stringify(event),
+      }),
+    onSuccess: async () => {
+      await client.invalidateQueries({ queryKey: eventsKey });
+    },
+  });
+}
+
+export function useDeleteEvent() {
+  const client = useQueryClient();
+
+  return useMutation({
+    mutationFn: (eventId: string) =>
+      apiRequest<void>(`/api/events/${eventId}`, { method: "DELETE" }),
+    onSuccess: async () => {
+      await client.invalidateQueries({ queryKey: eventsKey });
+    },
+  });
+}

@@ -25,6 +25,23 @@ class EventRepository:
         await self._session.refresh(event)
         return event
 
+    async def find_for_user(
+        self,
+        user_id: UUID,
+        event_id: UUID,
+    ) -> FixedEvent | None:
+        return await self._session.scalar(
+            select(FixedEvent).where(
+                FixedEvent.id == event_id,
+                FixedEvent.user_id == user_id,
+            )
+        )
+
+    async def save(self, event: FixedEvent) -> FixedEvent:
+        await self._session.flush()
+        await self._session.refresh(event)
+        return event
+
     async def delete_for_user(self, user_id: UUID, event_id: UUID) -> bool:
         statement = (
             delete(FixedEvent)

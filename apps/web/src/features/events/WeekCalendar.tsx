@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useEvents } from "./api";
+import { type FixedEvent, useDeleteEvent, useEvents } from "./api";
 
 function startOfWeek(value: Date): Date {
   const start = new Date(value);
@@ -26,12 +26,15 @@ function sameDay(first: Date, second: Date): boolean {
 
 interface WeekCalendarProps {
   referenceDate?: Date;
+  onEdit?: (event: FixedEvent) => void;
 }
 
 export function WeekCalendar({
   referenceDate = new Date(),
+  onEdit,
 }: WeekCalendarProps) {
   const events = useEvents();
+  const deleteEvent = useDeleteEvent();
   const [weekStart, setWeekStart] = useState(() => startOfWeek(referenceDate));
   const days = Array.from({ length: 7 }, (_, index) =>
     addDays(weekStart, index),
@@ -103,6 +106,17 @@ export function WeekCalendar({
                       {timeFormat.format(new Date(event.end_at))}
                     </span>
                     {event.location && <span>{event.location}</span>}
+                    <div className="event-actions">
+                      <button onClick={() => onEdit?.(event)} type="button">
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteEvent.mutate(event.id)}
+                        type="button"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </article>
                 ))}
               </div>
