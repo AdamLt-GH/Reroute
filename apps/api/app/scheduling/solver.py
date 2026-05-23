@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
+from uuid import UUID
 
 from app.scheduling.domain.events import FixedEventWindow
 from app.scheduling.domain.tasks import FlexibleTask
@@ -27,6 +28,24 @@ class PlanningInput:
     tasks: tuple[FlexibleTask, ...]
     fixed_events: tuple[FixedEventWindow, ...]
     availability: tuple[TimeWindow, ...]
+
+
+@dataclass(frozen=True)
+class ScheduledBlock:
+    task_id: UUID
+    title: str
+    start: datetime
+    end: datetime
+
+    @property
+    def minutes(self) -> int:
+        return int((self.end - self.start).total_seconds() // 60)
+
+
+@dataclass(frozen=True)
+class ScheduleResult:
+    blocks: tuple[ScheduledBlock, ...]
+    unscheduled_task_ids: tuple[UUID, ...]
 
 
 def validate_window(window: TimeWindow) -> TimeWindow:
@@ -98,3 +117,59 @@ def build_free_windows(planning: PlanningInput) -> list[TimeWindow]:
         free = subtract_window(free, blocked)
 
     return free
+
+
+def choose_session_minutes(
+    task: FlexibleTask,
+    remaining_minutes: int,
+    available_minutes: int,
+) -> int:
+    if not task.splittable:
+        return remaining_minutes if remaining_minutes <= available_minutes else 0
+
+    session = min(
+        remaining_minutes,
+        available_minutes,
+        task.maximum_session_minutes,
+        task.preferred_session_minutes,
+    )
+    leftover = remaining_minutes - session
+    if 0 < leftover < task.minimum_session_minutes:
+        session -= task.minimum_session_minutes - leftover
+
+    return session if session >= task.minimum_session_minutes else 0
+
+
+def schedule_tasks(planning: PlanningInput) -> ScheduleResult:
+    free = build_free_windows(planning)
+    blocks: list[ScheduledBlock] = []
+    unscheduled: list[UUID] = []
+
+    for task in sorted(planning.tasks, key=lambda item: item.deadline):
+        remaining = task.remaining_minutes
+
+        while remaining > 0:
+            placed = False
+            for window in free:
+                start = max(window.start, task.earliest_start)
+                end_limit = min(window.end, task.deadline)
+                available = int((end_limit - start).total_seconds() // 60)
+                session = choose_session_minutes(task, remaining, available)
+                if session == 0:
+                    continue
+
+                end = start + timedelta(minutes=session)
+                blocks.append(ScheduledBlock(task.id, task.title, start, end))
+                free = subtract_window(free, TimeWindow(start, end))
+                remaining -= session
+                placed = True
+                break
+
+            if not placed:
+                unscheduled.append(task.id)
+                break
+
+    return ScheduleResult(
+        blocks=tuple(sorted(blocks, key=lambda block: block.start)),
+        unscheduled_task_ids=tuple(unscheduled),
+    )
