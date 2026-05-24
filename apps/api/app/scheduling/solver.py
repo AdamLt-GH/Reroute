@@ -1,7 +1,11 @@
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from uuid import UUID
 
+from app.scheduling.domain.dependencies import (
+    Dependency,
+    validate_task_dependencies,
+)
 from app.scheduling.domain.events import FixedEventWindow
 from app.scheduling.domain.tasks import FlexibleTask
 from app.scheduling.domain.time import require_aware
@@ -28,6 +32,8 @@ class PlanningInput:
     tasks: tuple[FlexibleTask, ...]
     fixed_events: tuple[FixedEventWindow, ...]
     availability: tuple[TimeWindow, ...]
+    dependencies: tuple[Dependency, ...] = ()
+    maximum_daily_minutes: int = 480
 
 
 @dataclass(frozen=True)
@@ -141,11 +147,23 @@ def choose_session_minutes(
 
 
 def schedule_tasks(planning: PlanningInput) -> ScheduleResult:
+    if planning.maximum_daily_minutes <= 0:
+        raise SolverInputError("daily work limit must be positive")
+
     free = build_free_windows(planning)
     blocks: list[ScheduledBlock] = []
     unscheduled: list[UUID] = []
+    daily_minutes: dict[date, int] = {}
+    if planning.dependencies:
+        task_map = {task.id: task for task in planning.tasks}
+        ordered_tasks = validate_task_dependencies(
+            task_map,
+            planning.dependencies,
+        )
+    else:
+        ordered_tasks = tuple(sorted(planning.tasks, key=lambda item: item.deadline))
 
-    for task in sorted(planning.tasks, key=lambda item: item.deadline):
+    for task in ordered_tasks:
         remaining = task.remaining_minutes
 
         while remaining > 0:
@@ -154,6 +172,11 @@ def schedule_tasks(planning: PlanningInput) -> ScheduleResult:
                 start = max(window.start, task.earliest_start)
                 end_limit = min(window.end, task.deadline)
                 available = int((end_limit - start).total_seconds() // 60)
+                used_today = daily_minutes.get(start.date(), 0)
+                available = min(
+                    available,
+                    planning.maximum_daily_minutes - used_today,
+                )
                 session = choose_session_minutes(task, remaining, available)
                 if session == 0:
                     continue
@@ -162,6 +185,7 @@ def schedule_tasks(planning: PlanningInput) -> ScheduleResult:
                 blocks.append(ScheduledBlock(task.id, task.title, start, end))
                 free = subtract_window(free, TimeWindow(start, end))
                 remaining -= session
+                daily_minutes[start.date()] = used_today + session
                 placed = True
                 break
 
