@@ -7,7 +7,11 @@ from app.scheduling.domain.dependencies import (
     validate_task_dependencies,
 )
 from app.scheduling.domain.events import FixedEventWindow
-from app.scheduling.domain.tasks import FlexibleTask
+from app.scheduling.domain.tasks import (
+    FlexibleTask,
+    TaskStatus,
+    validate_task,
+)
 from app.scheduling.domain.time import require_aware
 
 
@@ -154,14 +158,20 @@ def schedule_tasks(planning: PlanningInput) -> ScheduleResult:
     blocks: list[ScheduledBlock] = []
     unscheduled: list[UUID] = []
     daily_minutes: dict[date, int] = {}
+    active_tasks = tuple(
+        validate_task(task)
+        for task in planning.tasks
+        if task.remaining_minutes > 0
+        and task.status not in {TaskStatus.COMPLETED, TaskStatus.CANCELLED}
+    )
     if planning.dependencies:
-        task_map = {task.id: task for task in planning.tasks}
+        task_map = {task.id: task for task in active_tasks}
         ordered_tasks = validate_task_dependencies(
             task_map,
             planning.dependencies,
         )
     else:
-        ordered_tasks = tuple(sorted(planning.tasks, key=lambda item: item.deadline))
+        ordered_tasks = tuple(sorted(active_tasks, key=lambda item: item.deadline))
 
     for task in ordered_tasks:
         remaining = task.remaining_minutes
