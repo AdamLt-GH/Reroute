@@ -11,4 +11,10 @@ async def get_session(request: Request) -> AsyncIterator[AsyncSession]:
     database = cast(Database, request.app.state.database)
 
     async with database.session_factory() as session:
-        yield session
+        try:
+            yield session
+        except Exception:
+            await session.rollback()
+            raise
+        else:
+            await session.commit()

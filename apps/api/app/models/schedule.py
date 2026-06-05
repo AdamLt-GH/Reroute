@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
@@ -25,6 +25,7 @@ class Schedule(UuidPrimaryKeyMixin, TimestampMixin, Base):
         ForeignKey("schedules.id", ondelete="SET NULL"),
         nullable=True,
     )
+    unscheduled_task_ids: Mapped[list[str]] = mapped_column(JSON, default=list)
 
     blocks: Mapped[list[ScheduleBlock]] = relationship(
         back_populates="schedule",

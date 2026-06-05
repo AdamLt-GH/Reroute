@@ -7,6 +7,7 @@ from uuid import UUID
 class TaskStatus(StrEnum):
     BACKLOG = "backlog"
     READY = "ready"
+    SCHEDULED = "scheduled"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
