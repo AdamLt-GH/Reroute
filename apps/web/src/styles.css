@@ -505,6 +505,62 @@ nav a:hover {
   background: transparent;
 }
 
+.schedule-panel {
+  margin-top: 28px;
+  padding: 24px;
+  border: 1px solid #d7d9d1;
+  border-radius: 16px;
+  background: #fffdf7;
+}
+
+.schedule-header,
+.schedule-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.schedule-header h2,
+.schedule-header p {
+  margin: 0;
+}
+
+.schedule-panel button {
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #26704d;
+  border-radius: 8px;
+  color: white;
+  background: #26704d;
+}
+
+.schedule-status {
+  margin: 20px 0 10px;
+  color: #6e7a73;
+  text-transform: capitalize;
+}
+
+.schedule-blocks {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.schedule-blocks article {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px;
+  border-left: 3px solid #26704d;
+  background: #e8eee8;
+}
+
+.schedule-blocks span {
+  color: #506057;
+  font-size: 0.85rem;
+}
+
 .dependency-editor {
   margin-top: 48px;
   padding: 24px;

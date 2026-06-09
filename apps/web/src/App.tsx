@@ -8,6 +8,7 @@ import { EventForm } from "./features/events/EventForm";
 import { WeekCalendar } from "./features/events/WeekCalendar";
 import type { FixedEvent } from "./features/events/api";
 import { SettingsEditor } from "./features/preferences/SettingsEditor";
+import { SchedulePanel } from "./features/schedules/SchedulePanel";
 import { TaskDependencyEditor } from "./features/tasks/TaskDependencyEditor";
 import { TaskForm } from "./features/tasks/TaskForm";
 import { TaskList } from "./features/tasks/TaskList";
@@ -73,6 +74,7 @@ export function CalendarPage() {
       <h1>Calendar</h1>
       <p>Your fixed events and generated schedule will appear here.</p>
       <WeekCalendar onEdit={setEditingEvent} />
+      <SchedulePanel />
       <EventForm
         event={editingEvent}
         key={editingEvent?.id ?? "new"}
