@@ -18,6 +18,20 @@ class ScheduleGenerateRequest(BaseModel):
         return self
 
 
+class ScheduleRecalculateRequest(BaseModel):
+    title: str
+    start_at: datetime
+    end_at: datetime
+
+    @model_validator(mode="after")
+    def validate_times(self) -> Self:
+        if self.start_at.tzinfo is None or self.end_at.tzinfo is None:
+            raise ValueError("disruption times must include a timezone")
+        if self.start_at >= self.end_at:
+            raise ValueError("disruption end must be after its start")
+        return self
+
+
 class ScheduleBlockResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

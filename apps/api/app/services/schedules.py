@@ -21,7 +21,10 @@ from app.scheduling.domain.tasks import (
     TaskStatus,
 )
 from app.scheduling.solver import PlanningInput, TimeWindow, schedule_tasks
-from app.schemas.schedules import ScheduleGenerateRequest
+from app.schemas.schedules import (
+    ScheduleGenerateRequest,
+    ScheduleRecalculateRequest,
+)
 
 
 class ScheduleNotFoundError(ValueError):
@@ -209,3 +212,42 @@ class ScheduleService:
             )
         await self._session.flush()
         return schedule
+
+    async def recalculate(
+        self,
+        user: User,
+        schedule_id: UUID,
+        request: ScheduleRecalculateRequest,
+    ) -> Schedule:
+        original = await self._session.scalar(
+            select(Schedule).where(
+                Schedule.id == schedule_id,
+                Schedule.user_id == user.id,
+            )
+        )
+        if original is None:
+            raise ScheduleNotFoundError
+
+        self._session.add(
+            FixedEvent(
+                user_id=user.id,
+                title=request.title,
+                start_at=request.start_at,
+                end_at=request.end_at,
+                source="disruption",
+                locked=True,
+                travel_before_minutes=0,
+                travel_after_minutes=0,
+            )
+        )
+        original.status = "replaced"
+        await self._session.flush()
+        return await self.generate(
+            user,
+            ScheduleGenerateRequest(
+                horizon_start=original.horizon_start,
+                horizon_end=original.horizon_end,
+            ),
+            source="recalculation",
+            parent_schedule_id=original.id,
+        )
