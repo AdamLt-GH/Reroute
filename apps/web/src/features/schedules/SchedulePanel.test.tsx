@@ -45,4 +45,7 @@ it("shows a proposed schedule and its unscheduled work", () => {
   expect(
     screen.getByRole("button", { name: "Accept schedule" }),
   ).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Recalculate schedule" }),
+  ).toBeInTheDocument();
 });

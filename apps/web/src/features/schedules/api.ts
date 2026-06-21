@@ -61,3 +61,25 @@ export function useAcceptSchedule() {
     },
   });
 }
+
+export function useRecalculateSchedule() {
+  const client = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      scheduleId,
+      disruption,
+    }: {
+      scheduleId: string;
+      disruption: { title: string; start_at: string; end_at: string };
+    }) =>
+      apiRequest<Schedule>(`/api/schedules/${scheduleId}/recalculate`, {
+        method: "POST",
+        body: JSON.stringify(disruption),
+      }),
+    onSuccess: async () => {
+      await client.invalidateQueries({ queryKey: schedulesKey });
+      await client.invalidateQueries({ queryKey: ["events"] });
+    },
+  });
+}
