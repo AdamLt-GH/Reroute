@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     database_url: str = Field(
         default="postgresql+asyncpg://reroute:reroute@localhost:5432/reroute"
     )
-    redis_url: str = "redis://localhost:6379/0"
+    frontend_url: str = "http://localhost:5173"
     session_days: int = Field(default=30, ge=1, le=365)
 
 

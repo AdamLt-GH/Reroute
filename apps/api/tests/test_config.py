@@ -10,7 +10,7 @@ def test_settings_use_local_service_defaults() -> None:
 
     assert settings.environment == "development"
     assert settings.database_url.startswith("postgresql+asyncpg://")
-    assert settings.redis_url == "redis://localhost:6379/0"
+    assert settings.frontend_url == "http://localhost:5173"
 
 
 def test_json_formatter_includes_the_main_log_fields() -> None:

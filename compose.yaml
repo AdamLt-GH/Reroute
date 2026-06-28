@@ -2,31 +2,35 @@ services:
   postgres:
     image: postgres:17-alpine
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-reroute}
-      POSTGRES_USER: ${POSTGRES_USER:-reroute}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-reroute}
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: reroute
+      POSTGRES_USER: reroute
+      POSTGRES_PASSWORD: reroute
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U reroute"]
       interval: 5s
       timeout: 5s
       retries: 10
 
-  redis:
-    image: redis:8-alpine
+  api:
+    build: ./apps/api
+    environment:
+      REROUTE_ENVIRONMENT: production
+      REROUTE_DATABASE_URL: postgresql+asyncpg://reroute:reroute@postgres:5432/reroute
+      REROUTE_FRONTEND_URL: http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      - "8000:8000"
+
+  web:
+    build: ./apps/web
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
 
 volumes:
   postgres-data:
-  redis-data:
