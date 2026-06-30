@@ -78,6 +78,13 @@ nav a:hover {
   text-overflow: ellipsis;
 }
 
+.account-summary button {
+  margin-top: 12px;
+  padding: 8px 10px;
+  border: 1px solid #707070;
+  text-align: left;
+}
+
 .app-content {
   min-width: 0;
 }
@@ -669,6 +676,52 @@ nav a:hover {
 .auth-card h1 {
   margin: 8px 0 12px;
   font-size: 2.5rem;
+}
+
+.auth-mode {
+  display: grid;
+  margin: 28px 0 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.auth-mode button {
+  min-height: 44px;
+  border: 1px solid #aab5ad;
+  color: #506057;
+  font-weight: 700;
+}
+
+.auth-mode button + button {
+  border-left: 0;
+}
+
+.auth-mode button[aria-pressed="true"] {
+  color: #fff;
+  background: #26704d;
+}
+
+.auth-form {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 7px;
+  font-weight: 700;
+}
+
+.auth-form input,
+.auth-form button {
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid #aab5ad;
+}
+
+.auth-form button {
+  color: #fff;
+  background: #26704d;
+  font-weight: 700;
 }
 
 .eyebrow {

@@ -22,13 +22,13 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    ports:
-      - "8000:8000"
 
   web:
-    build: ./apps/web
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
     ports:
-      - "3000:80"
+      - "127.0.0.1:3000:80"
     depends_on:
       - api
 

@@ -18,16 +18,35 @@ schedule. Adding an unexpected event generates a revised proposal.
 
 ## Run with Docker
 
-Docker is the shortest way to start the app:
+Docker Desktop is the only prerequisite. Start it, then run:
 
 ```bash
 docker compose up --build
 ```
 
-Open `http://localhost:3000`. PostgreSQL data is kept in the
-`postgres-data` volume.
+Open `http://localhost:3000`. Only the Nginx frontend is exposed to the Mac.
+It forwards API requests to FastAPI inside the Docker network. PostgreSQL data
+is stored in the `reroute_postgres-data` volume and survives container and Mac
+restarts.
 
-## Run locally
+Stop the application with:
+
+```bash
+docker compose down
+```
+
+This keeps saved users and calendar data. Do not add `-v` unless the database
+is intentionally being removed.
+
+If the Docker credential helper cannot be found, add the Docker Desktop tools
+to the current terminal and retry:
+
+```bash
+export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
+docker compose up --build
+```
+
+## Run for development
 
 Start PostgreSQL:
 
@@ -52,17 +71,20 @@ npm install
 npm run dev:web
 ```
 
-The frontend runs on `http://localhost:5173` and the API runs on
-`http://localhost:8000`.
+The development frontend runs on `http://localhost:5173` and proxies API calls
+to FastAPI on port 8000.
 
 ## Checks
 
 ```bash
 ./scripts/check-api.sh
+npm run format:web
 npm run lint:web
 npm run typecheck:web
 npm run test:web
 npm run build:web
+docker compose config --quiet
+docker compose build
 ```
 
 The scheduling algorithm is in

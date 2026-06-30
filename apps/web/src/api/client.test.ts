@@ -19,7 +19,7 @@ describe("apiRequest", () => {
     await apiRequest("/health");
 
     expect(fetchMock).toHaveBeenCalledWith(
-      "http://localhost:8000/health",
+      "/health",
       expect.objectContaining({ credentials: "include" }),
     );
   });
@@ -37,6 +37,27 @@ describe("apiRequest", () => {
 
     await expect(apiRequest("/api/auth/me")).rejects.toEqual(
       new ApiError("authentication required", 401),
+    );
+  });
+
+  it("returns the first validation message from the API", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            detail: [{ msg: "value is not a valid email address" }],
+          }),
+          {
+            status: 422,
+            headers: { "Content-Type": "application/json" },
+          },
+        ),
+      ),
+    );
+
+    await expect(apiRequest("/api/users/register")).rejects.toEqual(
+      new ApiError("value is not a valid email address", 422),
     );
   });
 });

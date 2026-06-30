@@ -82,7 +82,7 @@ it("shows saved settings and removes a constraint", async () => {
 
   await waitFor(() =>
     expect(request).toHaveBeenCalledWith(
-      "http://localhost:8000/api/scheduling/constraints/constraint-1",
+      "/api/scheduling/constraints/constraint-1",
       expect.objectContaining({ method: "DELETE" }),
     ),
   );

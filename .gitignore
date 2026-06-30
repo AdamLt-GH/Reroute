@@ -23,16 +23,13 @@ __pycache__/
 coverage/
 htmlcov/
 .coverage
-playwright-report/
-test-results/
 
 # generated TypeScript config output
 vite.config.js
 vite.config.d.ts
 
-# local database and worker data
+# local database data
 postgres-data/
-redis-data/
 
 # editor and operating system files
 .DS_Store

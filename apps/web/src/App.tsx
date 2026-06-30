@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 
-import { useCurrentUser } from "./features/auth/api";
+import { useCurrentUser, useLogout } from "./features/auth/api";
 import { AvailabilityEditor } from "./features/availability/AvailabilityEditor";
 import { Dashboard } from "./features/dashboard/Dashboard";
 import { EventForm } from "./features/events/EventForm";
@@ -15,6 +15,7 @@ import { TaskList } from "./features/tasks/TaskList";
 
 export function App() {
   const currentUser = useCurrentUser();
+  const logout = useLogout();
 
   return (
     <div className="app-shell">
@@ -32,6 +33,13 @@ export function App() {
         <div className="account-summary">
           <strong>{currentUser.data?.display_name}</strong>
           <span>{currentUser.data?.email}</span>
+          <button
+            disabled={logout.isPending}
+            onClick={() => logout.mutate()}
+            type="button"
+          >
+            {logout.isPending ? "Signing out..." : "Sign out"}
+          </button>
         </div>
       </aside>
       <div className="app-content">

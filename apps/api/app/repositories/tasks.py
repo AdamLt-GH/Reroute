@@ -1,3 +1,4 @@
+from typing import cast
 from uuid import UUID
 
 from sqlalchemy import delete, select
@@ -21,11 +22,14 @@ class TaskRepository:
         user_id: UUID,
         task_id: UUID,
     ) -> Task | None:
-        return await self._session.scalar(
-            select(Task).where(
-                Task.id == task_id,
-                Task.user_id == user_id,
-            )
+        return cast(
+            Task | None,
+            await self._session.scalar(
+                select(Task).where(
+                    Task.id == task_id,
+                    Task.user_id == user_id,
+                )
+            ),
         )
 
     async def ids_for_user(self, user_id: UUID) -> set[UUID]:

@@ -10,7 +10,7 @@ function getApiUrl(): string {
     return environment.VITE_API_URL;
   }
 
-  return "http://localhost:8000";
+  return "";
 }
 
 const API_URL = getApiUrl();
@@ -22,6 +22,30 @@ export class ApiError extends Error {
   ) {
     super(message);
   }
+}
+
+function getErrorMessage(body: unknown): string {
+  if (typeof body !== "object" || body === null || !("detail" in body)) {
+    return "server error, please try again";
+  }
+
+  if (typeof body.detail === "string") {
+    return body.detail;
+  }
+
+  if (Array.isArray(body.detail)) {
+    const firstError: unknown = body.detail[0];
+    if (
+      typeof firstError === "object" &&
+      firstError !== null &&
+      "msg" in firstError &&
+      typeof firstError.msg === "string"
+    ) {
+      return firstError.msg;
+    }
+  }
+
+  return "server error, please try again";
 }
 
 export async function apiRequest<T>(
@@ -39,14 +63,7 @@ export async function apiRequest<T>(
 
   if (!response.ok) {
     const body: unknown = await response.json().catch(() => null);
-    const message =
-      typeof body === "object" &&
-      body !== null &&
-      "detail" in body &&
-      typeof body.detail === "string"
-        ? body.detail
-        : "request failed";
-    throw new ApiError(message, response.status);
+    throw new ApiError(getErrorMessage(body), response.status);
   }
 
   if (response.status === 204) {

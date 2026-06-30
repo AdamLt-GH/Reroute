@@ -34,7 +34,7 @@ it("loads the current users tasks", async () => {
   await waitFor(() => expect(result.current.isSuccess).toBe(true));
   expect(result.current.data?.[0]?.title).toBe("Finish report");
   expect(fetch).toHaveBeenCalledWith(
-    "http://localhost:8000/api/tasks",
+    "/api/tasks",
     expect.objectContaining({ credentials: "include" }),
   );
 });

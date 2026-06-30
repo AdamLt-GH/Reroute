@@ -1,3 +1,4 @@
+from typing import cast
 from uuid import UUID
 
 from sqlalchemy import delete, select
@@ -30,11 +31,14 @@ class EventRepository:
         user_id: UUID,
         event_id: UUID,
     ) -> FixedEvent | None:
-        return await self._session.scalar(
-            select(FixedEvent).where(
-                FixedEvent.id == event_id,
-                FixedEvent.user_id == user_id,
-            )
+        return cast(
+            FixedEvent | None,
+            await self._session.scalar(
+                select(FixedEvent).where(
+                    FixedEvent.id == event_id,
+                    FixedEvent.user_id == user_id,
+                )
+            ),
         )
 
     async def save(self, event: FixedEvent) -> FixedEvent:

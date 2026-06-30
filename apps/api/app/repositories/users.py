@@ -1,3 +1,5 @@
+from typing import cast
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,7 +16,7 @@ class UserRepository:
 
     async def find_by_email(self, email: str) -> User | None:
         statement = select(User).where(User.email == normalise_email(email))
-        return await self._session.scalar(statement)
+        return cast(User | None, await self._session.scalar(statement))
 
     async def add(self, user: User) -> User:
         self._session.add(user)

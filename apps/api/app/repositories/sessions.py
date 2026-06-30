@@ -1,6 +1,7 @@
 import hashlib
 import secrets
 from datetime import UTC, datetime, timedelta
+from typing import cast
 from uuid import UUID
 
 from sqlalchemy import delete, select
@@ -39,13 +40,6 @@ class SessionRepository:
         await self._session.flush()
         return auth_session, token
 
-    async def find_active(self, token: str) -> AuthSession | None:
-        statement = select(AuthSession).where(
-            AuthSession.token_hash == hash_session_token(token),
-            AuthSession.expires_at > datetime.now(UTC),
-        )
-        return await self._session.scalar(statement)
-
     async def find_user(self, token: str) -> User | None:
         statement = (
             select(User)
@@ -56,7 +50,7 @@ class SessionRepository:
                 User.is_active.is_(True),
             )
         )
-        return await self._session.scalar(statement)
+        return cast(User | None, await self._session.scalar(statement))
 
     async def delete(self, token: str) -> None:
         statement = delete(AuthSession).where(
